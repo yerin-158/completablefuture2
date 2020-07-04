@@ -17,8 +17,8 @@ import java.util.concurrent.Executors;
 public class CoffeeService implements CoffeeUseCase {
 
     private final CoffeeRepository coffeeRepository;
-    //Executor executor = Executors.newFixedThreadPool(10);
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    Executor executor = Executors.newFixedThreadPool(10);
+    //private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Override
     public int getPriceSync(String name) {
@@ -50,7 +50,7 @@ public class CoffeeService implements CoffeeUseCase {
         return CompletableFuture.supplyAsync(() -> {
             log.info("새로운 쓰레드로 작업 시작");
             return coffeeRepository.getPriceByName(name);
-        }, threadPoolTaskExecutor);
+        }, executor);
         // info.
         // supplyAsync로 수행하는 로직은 Common Pool을 사용한다.
         // executor를 파라미터로 추가하면 Common Pool 대신 별도의 쓰레드 풀에서 동작한다.
@@ -58,6 +58,15 @@ public class CoffeeService implements CoffeeUseCase {
 
     @Override
     public CompletableFuture<Integer> getDiscountPriceAsync(Integer price) {
-        return null;
+        log.info("비동기 호출 방식으로 가격 변경 시작");
+        return CompletableFuture.supplyAsync(() -> {
+            log.info("가격 변경 메소드 쓰레드 작업 시작 ");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return (int) (price * 0.9);
+        }, executor);
     }
 }
