@@ -6,5 +6,6 @@ import java.util.concurrent.Future;
 public interface CoffeeUseCase {
     int getPriceSync(String name);
     CompletableFuture<Integer> getPriceAsync(String name);
+    CompletableFuture<Integer> getPriceAsyncWithSupplyAsync(String name);
     CompletableFuture<Integer> getDiscountPriceAsync(Integer price);
 }

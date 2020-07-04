@@ -39,6 +39,21 @@ public class CoffeeService implements CoffeeUseCase {
         return future;
     }
 
+    // getPriceAsync와 동일한 작업을 수행하지만
+    // 파라미터는 없지만 반환값이 있는 함수형 인터페이스인 supplyAsync를 사용하여
+    // 깔끔하게 코드를 작성한다.
+    @Override
+    public CompletableFuture<Integer> getPriceAsyncWithSupplyAsync(String name) {
+        log.info("비동기 호출 방식으로 가격 조회 시작");
+        return CompletableFuture.supplyAsync(() -> {
+            log.info("새로운 쓰레드로 작업 시작");
+            return coffeeRepository.getPriceByName(name);
+        }, executor);
+        // info.
+        // supplyAsync로 수행하는 로직은 Common Pool을 사용한다.
+        // executor를 파라미터로 추가하면 Common Pool 대신 별도의 쓰레드 풀에서 동작한다.
+    }
+
     @Override
     public CompletableFuture<Integer> getDiscountPriceAsync(Integer price) {
         return null;
